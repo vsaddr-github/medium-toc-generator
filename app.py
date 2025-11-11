@@ -3,7 +3,21 @@ from fastapi.responses import HTMLResponse
 from bs4 import BeautifulSoup
 import uvicorn
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
 app = FastAPI(title="Medium TOC Generator")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.svg", include_in_schema=False)
+async def favicon():
+    file_path = os.path.join(os.path.dirname(__file__), "static", "favicon.svg")
+    return FileResponse(file_path)
+
+
 
 STYLE = """
 <style>
@@ -32,7 +46,8 @@ HTML_HEAD = f"""
 <meta charset="UTF-8">
 <title>Medium TOC Generator | Vlad’s Test Target</title>
 <meta name="description" content="Generate a Table of Contents for your Medium articles directly from saved HTML. Upload, process, copy, and paste — quick and simple.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎞️</text></svg>">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+
 {STYLE}
 </head>
 """
