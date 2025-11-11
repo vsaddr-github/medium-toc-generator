@@ -45,13 +45,24 @@ HTML_FORM = f"""
 <p>This tool parses a Medium article saved as HTML (via <b>Save As → Webpage, Complete</b>
 or the <b>SingleFile</b> plugin). It extracts all headers and builds a ready-to-paste
 Table of Contents that works on both desktop and mobile.</p>
+<p>✅ <b>How to use:</b></p>
+<ul>
+<li>Save your Medium article as HTML (Complete Webpage or SingleFile plugin).</li>
+<li>Upload the saved HTML file using the form below.</li>
+<li>Copy the generated Table of Contents and paste it into your Medium article.</li>
+<li>Each TOC entry will link to the paragraph <i>preceding</i> next section title in your article. <br/>Read more about this in my original article <a href="https://medium.com/@vladstesttarget/the-medium-is-the-mess-of-ages-leaving-content-behind-9b016e7ad9bc?sk=4979490ff221b32ed5fee92c123db405" target="_blank">The Medium Is the Mess of Ages: Leaving Content Behind</a>.</li>
+<li>That's why it is highly recommended to have a short paragraph before the very first section header.</li>
+<li>Insert the generated TOC into your Medium article just before that paragraph so the references work correctly</li>
+<li>Do not replace or remove that paragraph with TOC.</li>
+</ul>
 
 <form action="/upload" enctype="multipart/form-data" method="post">
 <input type="file" name="file" accept=".html,.htm" required>
 <p><button class="button" type="submit">Generate TOC</button></p>
 </form>
 
-<p><a href="https://buymeacoffee.com/" target="_blank">☕ Buy me a coffee</a></p>
+<p><a href="https://buymeacoffee.com/vladstesttarget" target="_blank">☕ Buy me a coffee</a> 
+or better yet buy my target at <a href="https://www.film4ever.info/vtt/how-to" target="_blank">Amazon, eBay, Etsy, etc </a>   </p>
 </div>
 <footer>Made by <b>Vlad’s Test Target</b></footer>
 </body></html>
@@ -108,7 +119,7 @@ async def upload(file: UploadFile = File(...)):
     <h1>Generated Table of Contents</h1>
 
     <p>✅ Below is your rendered Table of Contents.  
-    Just select and copy it directly from the page, then paste it into your Medium article.</p>
+    Just select and copy it directly from the page, then paste it into your Medium article just before the paragraph preceding the very first section header.</p>
 
     <div id="toc-view" style="border:1px solid #ddd; padding:1em; border-radius:8px; background:#fff;">
       {toc_html}
@@ -125,4 +136,22 @@ async def upload(file: UploadFile = File(...)):
     """
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=7860)
+    import uvicorn
+    import sys
+
+    host = "127.0.0.1"
+    port = 7860
+
+    print(f"\n🚀 Starting Medium TOC Generator at http://{host}:{port}\n")
+    print("Press CTRL+C to stop.\n")
+
+    try:
+        uvicorn.run(app, host=host, port=port)
+    except KeyboardInterrupt:
+        print("\n🛑 Server stopped by user (CTRL+C). Shutting down gracefully...")
+    except Exception as e:
+        print(f"\n❌ Unexpected error: {e}")
+        sys.exit(1)
+    else:
+        print("\n✅ Server exited normally.")
+
